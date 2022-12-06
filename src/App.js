@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import './App.css';
 import { User } from "./components/User";
+import Login from "./components/Login"
+import Logs from "./components/Logs"
 import React from "react";
 import {connect} from "socket.io-client";
 const { io } = require("socket.io-client");
@@ -34,7 +36,6 @@ function App() {
             }
         })
             .then((response) => {
-                console.log(response.status)
                 if (response.status !== 200) {
                     return toDo
                 }
@@ -143,6 +144,11 @@ function App() {
 
     return (
         <div className="App">
+
+            <div className={"loginAndLogButtons"}>
+                <Login/> <Logs/>
+            </div>
+
             <h1 className={"text-center"} >To Do List</h1>
 
             <div className={"newToDoForm"}>
@@ -171,6 +177,7 @@ function App() {
                 onDelete={onDelete}
             />
             ))}
+
         </div>
     );
 }

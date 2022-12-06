@@ -23,3 +23,8 @@ button {
 .newToDoForm {
   margin: 2em 0;
 }
+
+.loginAndLogButtons {
+  margin-top: 1em;
+  display: flex;
+}

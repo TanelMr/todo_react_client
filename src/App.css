@@ -1,0 +1,25 @@
+.header {
+  font-weight: bold;
+  margin: 1em 0;
+}
+
+form {
+  text-align: center;
+  margin: 0 1em;
+}
+
+.assignments {
+  margin: 0.5em 0;
+}
+
+input {
+  margin: 0 0.5em;
+}
+
+button {
+  margin: 0 0.2em;
+}
+
+.newToDoForm {
+  margin: 2em 0;
+}

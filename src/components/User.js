@@ -24,6 +24,7 @@ export const User = ({id, title, completed, onEdit, onDelete}) => {
                         <input placeholder="Task" name="task" defaultValue={title} id={"EditTaskTitleInput"} />
                         <input placeholder="Completed" name="completed" defaultValue={completed} id={"EditTaskCompletedInput"} />
                         <button onSubmit={handleOnEditSubmit} id={"SaveEditButton"}>Save</button>
+                        <button onSubmit={handleEdit}>Cancel</button>
                     </form>
                 ) : (
                     <div className={"container assignments"}>

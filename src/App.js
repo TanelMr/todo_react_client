@@ -1,18 +1,19 @@
-import { useState, useEffect } from "react";
+import React, {useEffect, useState} from "react";
 import './App.css';
-import { User } from "./components/User";
+import {AuthorizedUser} from "./components/AuthorizedUser";
 import Login from "./components/Login"
 import Logs from "./components/Logs"
-import React from "react";
 import {connect} from "socket.io-client";
-const { io } = require("socket.io-client");
+import {NotAuthorizedUser} from "./components/NotAuthorizedUser";
+
+const {io} = require("socket.io-client");
 
 const socket = io("ws://localhost:3001");
 
 function App() {
 
     useEffect(() => {
-        socket.on(connect, function(){
+        socket.on(connect, function () {
             console.log('Connected to websocket')
         })
         socket.onAny(() => {
@@ -27,9 +28,8 @@ function App() {
     const [toDo, setToDo] = useState([]);
 
 
-
     const fetchData = async () => {
-        await fetch (process.env.REACT_APP_API, {
+        await fetch(process.env.REACT_APP_API, {
             method: "GET",
             headers: {
                 "Content-type": "application/json; charset=UTF-8",
@@ -38,16 +38,14 @@ function App() {
             .then((response) => {
                 if (response.status !== 200) {
                     return toDo
-                }
-                else
-                return response.json();
+                } else
+                    return response.json();
             })
-            .then((data) =>{
+            .then((data) => {
                 setToDo(data)
                 localStorage.setItem('data', JSON.stringify(data))
-            } )
-            .catch((error) =>
-            {
+            })
+            .catch((error) => {
                 console.log(error)
                 setToDo(JSON.parse(localStorage.getItem('data')))
             });
@@ -75,20 +73,20 @@ function App() {
             },
         })
             .then((response) => {
-                        return response.json();
+                return response.json();
             })
             .then((data) => {
-                const getLastId = toDo[toDo.length -1 ]
-                const setLastId = getLastId.id
-                data.id = setLastId + 1
-                setToDo((toDo) => [...toDo, data]);
-                socket.emit('event')
-                localStorage.setItem('data', JSON.stringify(toDo))
+                    const getLastId = toDo[toDo.length - 1]
+                    const setLastId = getLastId.id
+                    data.id = setLastId + 1
+                    setToDo((toDo) => [...toDo, data]);
+                    socket.emit('event')
+                    localStorage.setItem('data', JSON.stringify(toDo))
 
                 }
             )
-            evt.target.task.value = ""
-            evt.target.completed.value = ""
+        evt.target.task.value = ""
+        evt.target.completed.value = ""
 
     };
 
@@ -106,7 +104,7 @@ function App() {
             },
         })
             .then((response) => {
-                    return response.json();
+                return response.json();
             })
             .then((data) => {
                 socket.emit('event')
@@ -126,21 +124,23 @@ function App() {
 
     const onDelete = async (id) => {
 
-        await fetch(process.env.REACT_APP_API + id , {
+        await fetch(process.env.REACT_APP_API + id, {
             method: "DELETE"
         })
             .then((response) => {
                 socket.emit('event')
                 setToDo(
-                        toDo.filter((ToDo) => {
-                            return ToDo.id !== id;
-                        })
-                    );
+                    toDo.filter((ToDo) => {
+                        return ToDo.id !== id;
+                    })
+                );
             })
             .catch((error) => console.log(error));
         localStorage.setItem('data', JSON.stringify(toDo))
 
     };
+
+    const [authorized, setAuthorized] = useState(true)
 
     return (
         <div className="App">
@@ -149,34 +149,56 @@ function App() {
                 <Login/> <Logs/>
             </div>
 
-            <h1 className={"text-center"} >To Do List</h1>
+            <h1 className={"text-center"}>To Do List</h1>
 
-            <div className={"newToDoForm"}>
-                <form onSubmit={handleOnSubmit}>
-                    <h5>Add new ToDo item</h5>
-                    <input placeholder="Task name" name="task" id={"AddingTaskTitleInput"} />
-                    <input placeholder="Is completed?" name="completed" id={"AddingTaskCompletedInput"}/>
-                    <button onSubmit={handleOnSubmit} id={"AddButton"}>Add</button>
-                    <hr />
-                </form>
+            {authorized ? (
+                <div className={"newToDoForm"}>
+                    <form onSubmit={handleOnSubmit}>
+                        <h5>Add new ToDo item</h5>
+                        <input placeholder="Task name" name="task" id={"AddingTaskTitleInput"}/>
+                        <input placeholder="Is completed?" name="completed" id={"AddingTaskCompletedInput"}/>
+                        <button onSubmit={handleOnSubmit} id={"AddButton"}>Add</button>
+                        <hr/>
+                    </form>
+                </div>
+            ) : (
+                <div/>
+            )}
+
+            <div className={"container header"}>
+                <div className={"row"}>
+                    <div className={"col"}>Assignment name</div>
+                    <div className={"col"}>Is completed?</div>
+                    <div className={"col"}>Edit assignment</div>
+                </div>
             </div>
 
-           <div className={"container header"}>
-               <div className={"row"}>
-                <div className={"col"}>Assignment name</div>
-                <div className={"col"}>Is completed?</div>
-                <div className={"col"}>Edit assignment</div>
-               </div>
-           </div>
-            {toDo.map((list) => (
-            <User key={list.id}
-                id={list.id}
-                title={list.title}
-                completed={list.completed}
-                onEdit={onEdit}
-                onDelete={onDelete}
-            />
-            ))}
+            {authorized ? (
+                <div>
+                    {toDo.map((list) => (
+                        <AuthorizedUser key={list.id}
+                                        id={list.id}
+                                        title={list.title}
+                                        completed={list.completed}
+                                        onEdit={onEdit}
+                                        onDelete={onDelete}
+                        />
+                    ))}
+                </div>
+            ) : (
+                <div>
+                    {toDo.map((list) => (
+                        <NotAuthorizedUser key={list.id}
+                                           id={list.id}
+                                           title={list.title}
+                                           completed={list.completed}
+                                           onEdit={onEdit}
+                                           onDelete={onDelete}
+                        />
+                    ))}
+                    <h3 className={"loginAlert"}>Please log in to make changes to the list!</h3>
+                </div>
+            )}
 
         </div>
     );

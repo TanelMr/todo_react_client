@@ -23,7 +23,6 @@ export default function Logs() {
 
     function afterOpenModal() {
         // references are now sync'd and can be accessed.
-        subtitle.style.color = '#f00';
     }
 
     function closeModal() {
@@ -31,7 +30,7 @@ export default function Logs() {
     }
 
 
-    return(
+    return (
         <div>
             <button onClick={openModal}>View logs</button>
             <Modal
@@ -43,7 +42,7 @@ export default function Logs() {
                 contentLabel="Example Modal"
             >
                 <h2>Logs:</h2>
-                <button style={{marginTop:10}} onClick={closeModal}>Close</button>
+                <button style={{marginTop: 10}} onClick={closeModal}>Close</button>
             </Modal>
         </div>
     )

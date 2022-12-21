@@ -1,7 +1,43 @@
-import React from 'react';
+import React, {useState} from 'react';
 import Modal from 'react-modal';
 
+async function loginUser(credentials) {
+    await fetch('http://localhost:3001/login', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(credentials)
+    })
+        // .then((response) => {
+        //     console.log(response)
+        //     return response.json()
+        // })
+        .then((data) => {
+            console.log(data)
+            return data.json()
+        })
+}
+
 export default function Login() {
+
+    const [username, setUserName] = useState("");
+    const [password, setPassword] = useState("");
+
+    const handleSubmit = async e => {
+        e.preventDefault();
+        const response = await loginUser({
+            username,
+            password
+        });
+        console.log(response)
+        // if (response === []) {
+        //     console.log("User authenticated")
+        // } else {
+        //     console.log("User not authenticated")
+        // }
+        // setAuthorized(token);
+    }
 
     const customStyles = {
         content: {
@@ -18,7 +54,6 @@ export default function Login() {
 
     };
 
-    let subtitle;
     const [modalIsOpen, setIsOpen] = React.useState(false);
 
     function openModal() {
@@ -46,14 +81,14 @@ export default function Login() {
             >
 
                 <h3>Log in</h3>
-                <form>
+                <form onSubmit={handleSubmit}>
                     <label>
                         <p>Username</p>
-                        <input type="text"/>
+                        <input type="text" onChange={e => setUserName(e.target.value)}/>
                     </label>
                     <label>
                         <p>Password</p>
-                        <input type="password"/>
+                        <input type="password" onChange={e => setPassword(e.target.value)}/>
                     </label>
                     <button type="submit">Submit</button>
                 </form>
@@ -62,3 +97,4 @@ export default function Login() {
         </div>
     )
 }
+

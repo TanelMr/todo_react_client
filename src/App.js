@@ -17,12 +17,13 @@ function App() {
             console.log('Connected to websocket')
         })
         socket.onAny(() => {
-            fetchData()
+            void fetchData()
         });
         return () => {
             socket.off('connect');
             socket.off('disconnect');
         };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const [toDo, setToDo] = useState([]);
@@ -52,7 +53,8 @@ function App() {
     };
 
     useEffect(() => {
-        fetchData();
+        void fetchData();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const handleOnSubmit = async (evt) => {
@@ -140,13 +142,19 @@ function App() {
 
     };
 
-    const [authorized, setAuthorized] = useState(true)
+    const [authorized, setAuthorized] = useState(false)
+    const handleLogin = (value) => {
+        setAuthorized(value);
+    }
+
+    console.log(authorized)
+
 
     return (
         <div className="App">
 
             <div className={"loginAndLogButtons"}>
-                <Login/> <Logs/>
+                <Login authorized={null} onChange={handleLogin}/> <Logs/>
             </div>
 
             <h1 className={"text-center"}>To Do List</h1>

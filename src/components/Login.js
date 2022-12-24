@@ -1,43 +1,7 @@
 import React, {useState} from 'react';
 import Modal from 'react-modal';
 
-async function loginUser(credentials) {
-    await fetch('http://localhost:3001/login', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(credentials)
-    })
-        // .then((response) => {
-        //     console.log(response)
-        //     return response.json()
-        // })
-        .then((data) => {
-            console.log(data)
-            return data.json()
-        })
-}
-
-export default function Login() {
-
-    const [username, setUserName] = useState("");
-    const [password, setPassword] = useState("");
-
-    const handleSubmit = async e => {
-        e.preventDefault();
-        const response = await loginUser({
-            username,
-            password
-        });
-        console.log(response)
-        // if (response === []) {
-        //     console.log("User authenticated")
-        // } else {
-        //     console.log("User not authenticated")
-        // }
-        // setAuthorized(token);
-    }
+export default function Login(props) {
 
     const customStyles = {
         content: {
@@ -60,12 +24,63 @@ export default function Login() {
         setIsOpen(true);
     }
 
+    function closeModal() {
+        setIsOpen(false);
+    }
+
     function afterOpenModal() {
         // references are now sync'd and can be accessed.
     }
 
-    function closeModal() {
-        setIsOpen(false);
+
+    const [username, setUserName] = useState("");
+    const [password, setPassword] = useState("");
+    const [login, setLogin] = useState(null)
+
+    async function loginUser(credentials) {
+        await fetch('http://localhost:3001/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(credentials)
+        })
+            .then((response) => {
+                return response.json()
+            })
+            .then((data) => {
+                console.log(data)
+                setLogin(data)
+                props.onChange(data);
+            })
+    }
+
+    const handleSubmit = async e => {
+        e.preventDefault();
+        await loginUser({
+            username,
+            password
+        });
+    }
+
+    const ErrorMessage = () => {
+        if (login === null) {
+            return (
+                <h6 style={{textAlign: "center", marginTop: 10}}>Please log in</h6>
+            )
+        } else if (login === false) {
+            return (
+                <h6 style={{textAlign: "center", marginTop: 10, color: "red"}}>Invalid username or password!</h6>
+            )
+        } else if (login === true) {
+            return (
+                <h6 style={{textAlign: "center", marginTop: 10, color: "green"}}>Login successful. You can now edit the
+                    todo
+                    list.</h6>
+            )
+        } else {
+            return (<h1>Fucked</h1>)
+        }
     }
 
     return (
@@ -77,7 +92,6 @@ export default function Login() {
                 onAfterOpen={afterOpenModal}
                 onRequestClose={closeModal}
                 style={customStyles}
-                contentLabel="Login modal"
             >
 
                 <h3>Log in</h3>
@@ -92,6 +106,10 @@ export default function Login() {
                     </label>
                     <button type="submit">Submit</button>
                 </form>
+                <div>
+                    <ErrorMessage/>
+                </div>
+
                 <button style={{marginTop: 10}} onClick={closeModal}>Close</button>
             </Modal>
         </div>

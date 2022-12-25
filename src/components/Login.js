@@ -63,6 +63,24 @@ export default function Login(props) {
         });
     }
 
+    const Logout = () => {
+        function logOut() {
+            setLogin(null)
+            window.location.reload();
+        }
+
+        if (login === null || login === false) {
+            console.log(login)
+            return (
+                <button onClick={openModal}>Log in</button>
+            )
+        } else {
+            return (
+                <button onClick={logOut}>Log out</button>
+            )
+        }
+    }
+
     const ErrorMessage = () => {
         if (login === null) {
             return (
@@ -78,14 +96,12 @@ export default function Login(props) {
                     todo
                     list.</h6>
             )
-        } else {
-            return (<h1>Fucked</h1>)
         }
     }
 
     return (
         <div>
-            <button onClick={openModal}>Log in</button>
+            <Logout/>
             <Modal
                 isOpen={modalIsOpen}
                 ariaHideApp={false}
@@ -115,4 +131,6 @@ export default function Login(props) {
         </div>
     )
 }
+
+
 

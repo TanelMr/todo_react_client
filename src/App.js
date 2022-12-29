@@ -43,16 +43,16 @@ function App() {
       })
         .then((response) => {
           if (response.status !== 200) {
-            return toDo;
+            setToDo(JSON.parse(localStorage.getItem("data")));
           } else return response.json();
         })
         .then((data) => {
           setToDo(data);
-          // localStorage.setItem('data', JSON.stringify(data))
+          localStorage.setItem("data", JSON.stringify(data));
         })
         .catch((error) => {
           console.log(error);
-          // setToDo(JSON.parse(localStorage.getItem('data')))
+          setToDo(JSON.parse(localStorage.getItem("data")));
         });
     } else {
       await fetch(process.env.REACT_APP_API + "user", {
@@ -72,11 +72,11 @@ function App() {
         .then((data) => {
           setToDo(data);
           setAuthorized(true);
-          // localStorage.setItem('data', JSON.stringify(data))
+          localStorage.setItem("data", JSON.stringify(data));
         })
         .catch((error) => {
           console.log(error);
-          // setToDo(JSON.parse(localStorage.getItem('data')))
+          setToDo(JSON.parse(localStorage.getItem("data")));
         });
     }
   };
@@ -103,19 +103,10 @@ function App() {
       headers: {
         "Content-type": "application/json; charset=UTF-8",
       },
-    })
-      .then((response) => {
-        return response.json();
-      })
-      .then((data) => {
-        //auto-generate ID?
-        const getLastId = toDo[toDo.length - 1];
-        const setLastId = getLastId.id;
-        data.id = setLastId + 1;
-        setToDo((toDo) => [...toDo, data]);
-        socket.emit("event");
-        localStorage.setItem("data", JSON.stringify(toDo));
-      });
+    }).then(() => {
+      socket.emit("event");
+      localStorage.setItem("data", JSON.stringify(toDo));
+    });
     evt.target.task.value = "";
     evt.target.completed.value = "";
   };
@@ -132,23 +123,10 @@ function App() {
         "Content-type": "application/json; charset=UTF-8",
       },
     })
-      .then((response) => {
-        return response.json();
-      })
-      .then((data) => {
+      .then(() => {
         socket.emit("event");
-        const updatedUsers = toDo.map((list) => {
-          if (list.id === id) {
-            list.title = title;
-            list.completed = completed;
-          }
-          return list;
-        });
-
-        setToDo((toDo) => updatedUsers);
       })
       .catch((error) => console.log(error));
-    localStorage.setItem("data", JSON.stringify(toDo));
   };
 
   const onDelete = async (id) => {
@@ -157,14 +135,8 @@ function App() {
     })
       .then((response) => {
         socket.emit("event");
-        setToDo(
-          toDo.filter((ToDo) => {
-            return ToDo.id !== id;
-          })
-        );
       })
       .catch((error) => console.log(error));
-    localStorage.setItem("data", JSON.stringify(toDo));
   };
 
   return (

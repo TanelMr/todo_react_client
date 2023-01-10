@@ -11,9 +11,6 @@ export default function Login(props) {
       marginRight: "-50%",
       transform: "translate(-50%, -50%)",
     },
-    closeButton: {
-      marginTop: 1,
-    },
   };
 
   const [modalIsOpen, setIsOpen] = React.useState(false);
@@ -126,9 +123,7 @@ export default function Login(props) {
           <ErrorMessage />
         </div>
 
-        <button style={{ marginTop: 10 }} onClick={closeModal}>
-          Close
-        </button>
+        <button onClick={closeModal}>Close</button>
       </Modal>
     </div>
   );

@@ -103,8 +103,12 @@ function App() {
       headers: {
         "Content-type": "application/json; charset=UTF-8",
       },
-    }).then(() => {
-      socket.emit("event");
+    }).then((res) => {
+      if (res.status === 429) {
+        window.alert("Too many requests. Please wait and try again later");
+      } else {
+        socket.emit("event");
+      }
     });
     evt.target.task.value = "";
     evt.target.completed.value = "";
@@ -123,7 +127,6 @@ function App() {
       },
     })
       .then((res) => {
-        console.log(res.status);
         if (res.status === 429) {
           window.alert("Too many requests. Please wait and try again later");
         } else {
@@ -137,8 +140,12 @@ function App() {
     await fetch(process.env.REACT_APP_API + id, {
       method: "DELETE",
     })
-      .then(() => {
-        socket.emit("event");
+      .then((res) => {
+        if (res.status === 429) {
+          window.alert("Too many requests. Please wait and try again later");
+        } else {
+          socket.emit("event");
+        }
       })
       .catch((error) => console.log(error));
   };

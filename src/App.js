@@ -105,7 +105,6 @@ function App() {
       },
     }).then(() => {
       socket.emit("event");
-      localStorage.setItem("data", JSON.stringify(toDo));
     });
     evt.target.task.value = "";
     evt.target.completed.value = "";
@@ -123,8 +122,13 @@ function App() {
         "Content-type": "application/json; charset=UTF-8",
       },
     })
-      .then(() => {
-        socket.emit("event");
+      .then((res) => {
+        console.log(res.status);
+        if (res.status === 429) {
+          window.alert("Too many requests. Please wait and try again later");
+        } else {
+          socket.emit("event");
+        }
       })
       .catch((error) => console.log(error));
   };
@@ -133,7 +137,7 @@ function App() {
     await fetch(process.env.REACT_APP_API + id, {
       method: "DELETE",
     })
-      .then((response) => {
+      .then(() => {
         socket.emit("event");
       })
       .catch((error) => console.log(error));

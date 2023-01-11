@@ -23,8 +23,6 @@ export default function Login(props) {
     setIsOpen(false);
   }
 
-  function afterOpenModal() {}
-
   const [username, setUserName] = useState("");
   const [password, setPassword] = useState("");
   const [login, setLogin] = useState(null);
@@ -38,6 +36,13 @@ export default function Login(props) {
       body: JSON.stringify(credentials),
     })
       .then((response) => {
+        if (response.status === 429) {
+          window.alert(
+            "Too many login requests! Please wait and try again later."
+          );
+          setLogin(null);
+          throw new Error("Too many request");
+        }
         return response.json();
       })
       .then((data) => {
@@ -99,7 +104,6 @@ export default function Login(props) {
       <Modal
         isOpen={modalIsOpen}
         ariaHideApp={false}
-        onAfterOpen={afterOpenModal}
         onRequestClose={closeModal}
         style={customStyles}
       >

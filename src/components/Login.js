@@ -49,9 +49,8 @@ export default function Login(props) {
         if (data === false) {
           setLogin(data);
         } else {
-          let userID = data.id;
-          setLogin(userID);
-          props.onChange(userID);
+          setLogin(data.id);
+          props.onChange({ id: data.id, token: data.token });
         }
       });
   }
@@ -66,11 +65,12 @@ export default function Login(props) {
 
   const Logout = () => {
     function logOut() {
-      window.localStorage.removeItem("key");
+      window.localStorage.removeItem("token");
+      window.localStorage.removeItem("userid");
       window.location.reload();
     }
 
-    if (localStorage.getItem("key") === null) {
+    if (login === null) {
       return <button onClick={openModal}>Log in</button>;
     } else {
       return <button onClick={logOut}>Log out</button>;

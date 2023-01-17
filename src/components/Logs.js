@@ -63,13 +63,11 @@ export default function Logs() {
         <table>
           <thead>
             <tr>
-              <th> Date</th>
+              <th> Date&Time</th>
               <th> Method</th>
               <th> UserID</th>
-              <th> New task value</th>
-              <th> New completed value</th>
-              <th> Old task value</th>
-              <th> Old completed value</th>
+              <th> Task</th>
+              <th> Completed</th>
             </tr>
           </thead>
           <tbody>

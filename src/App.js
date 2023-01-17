@@ -26,20 +26,20 @@ function App() {
 
   const [toDo, setToDo] = useState([]);
   const [authorized, setAuthorized] = useState(false);
+
   const handleLogin = (value) => {
-    localStorage.setItem("key", JSON.stringify(value));
-    void fetchData(value);
+    localStorage.setItem("token", value.token);
+    localStorage.setItem("userid", JSON.stringify(value.id));
+    void fetchData();
   };
 
   const fetchData = async () => {
-    const key = JSON.parse(localStorage.getItem("key"));
-
-    if (key === null) {
+    if (
+      localStorage.getItem("userid") === null &&
+      localStorage.getItem("token") === null
+    ) {
       await fetch(process.env.REACT_APP_API, {
         method: "GET",
-        headers: {
-          "Content-type": "application/json; charset=UTF-8",
-        },
       })
         .then((response) => {
           if (response.status !== 200) {
@@ -58,10 +58,11 @@ function App() {
       await fetch(process.env.REACT_APP_API + "user", {
         method: "POST",
         body: JSON.stringify({
-          id: key,
+          id: localStorage.getItem("userid"),
         }),
         headers: {
           "Content-type": "application/json; charset=UTF-8",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       })
         .then((response) => {
@@ -71,8 +72,8 @@ function App() {
         })
         .then((data) => {
           setToDo(data);
-          setAuthorized(true);
           localStorage.setItem("data", JSON.stringify(data));
+          setAuthorized(true);
         })
         .catch((error) => {
           console.log(error);
@@ -91,17 +92,17 @@ function App() {
 
     const title = evt.target.task.value;
     const completed = evt.target.completed.value;
-    const userID = JSON.parse(localStorage.getItem("key"));
 
     await fetch(process.env.REACT_APP_API, {
       method: "POST",
       body: JSON.stringify({
         title: title,
         completed: completed,
-        userID: userID,
+        userID: JSON.parse(localStorage.getItem("userid")),
       }),
       headers: {
         "Content-type": "application/json; charset=UTF-8",
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
       },
     }).then((res) => {
       if (res.status === 429) {
@@ -124,6 +125,7 @@ function App() {
       }),
       headers: {
         "Content-type": "application/json; charset=UTF-8",
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
       },
     })
       .then((res) => {
@@ -139,6 +141,9 @@ function App() {
   const onDelete = async (id) => {
     await fetch(process.env.REACT_APP_API + id, {
       method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
     })
       .then((res) => {
         if (res.status === 429) {
@@ -153,7 +158,7 @@ function App() {
   return (
     <div className="App">
       <div className={"loginAndLogButtons"}>
-        <Login authorized={null} onChange={handleLogin} /> <Logs />
+        <Login authorized={{}} onChange={handleLogin} /> <Logs />
       </div>
 
       <h1 className={"text-center"}>To Do List</h1>

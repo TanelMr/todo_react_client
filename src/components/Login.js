@@ -41,17 +41,16 @@ export default function Login(props) {
             "Too many login requests! Please wait and try again later."
           );
           setLogin(null);
-          throw new Error("Too many request");
+          throw new Error("Too many requests!");
+        } else if (response.status === 401) {
+          setLogin(false);
+          throw new Error("Wrong login credentials!");
         }
         return response.json();
       })
       .then((data) => {
-        if (data === false) {
-          setLogin(data);
-        } else {
-          setLogin(data.id);
-          props.onChange({ id: data.id, token: data.token });
-        }
+        setLogin(data.id);
+        props.onChange({ id: data.id, token: data.token });
       });
   }
 

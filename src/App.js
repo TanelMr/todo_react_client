@@ -3,6 +3,7 @@ import "./App.css";
 import { AuthorizedUser } from "./components/AuthorizedUser";
 import Login from "./components/Login";
 import Logs from "./components/Logs";
+import CreateUser from "./components/createUser";
 import { NotAuthorizedUser } from "./components/NotAuthorizedUser";
 import { connect } from "socket.io-client";
 
@@ -38,7 +39,7 @@ function App() {
       localStorage.getItem("userid") === null &&
       localStorage.getItem("token") === null
     ) {
-      await fetch(process.env.REACT_APP_API, {
+      await fetch(process.env.REACT_APP_API + "tasks", {
         method: "GET",
       })
         .then((response) => {
@@ -55,7 +56,7 @@ function App() {
           setToDo(JSON.parse(localStorage.getItem("data")));
         });
     } else {
-      await fetch(process.env.REACT_APP_API + "user", {
+      await fetch(process.env.REACT_APP_API + "users/tasks", {
         method: "POST",
         body: JSON.stringify({
           id: localStorage.getItem("userid"),
@@ -93,18 +94,22 @@ function App() {
     const title = evt.target.task.value;
     const completed = evt.target.completed.value;
 
-    await fetch(process.env.REACT_APP_API, {
-      method: "POST",
-      body: JSON.stringify({
-        title: title,
-        completed: completed,
-        userID: JSON.parse(localStorage.getItem("userid")),
-      }),
-      headers: {
-        "Content-type": "application/json; charset=UTF-8",
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-    }).then((res) => {
+    await fetch(
+      process.env.REACT_APP_API +
+        "tasks/" +
+        JSON.parse(localStorage.getItem("userid")),
+      {
+        method: "POST",
+        body: JSON.stringify({
+          title: title,
+          completed: completed,
+        }),
+        headers: {
+          "Content-type": "application/json; charset=UTF-8",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
+    ).then((res) => {
       if (res.status === 429) {
         window.alert("Too many requests. Please wait and try again later");
       } else {
@@ -116,7 +121,7 @@ function App() {
   };
 
   const onEdit = async (id, title, completed) => {
-    await fetch(process.env.REACT_APP_API + id, {
+    await fetch(process.env.REACT_APP_API + "tasks/" + id, {
       method: "PUT",
       body: JSON.stringify({
         id: id,
@@ -139,7 +144,7 @@ function App() {
   };
 
   const onDelete = async (id) => {
-    await fetch(process.env.REACT_APP_API + id, {
+    await fetch(process.env.REACT_APP_API + "tasks/" + id, {
       method: "DELETE",
       headers: {
         Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -158,7 +163,7 @@ function App() {
   return (
     <div className="App">
       <div className={"loginAndLogButtons"}>
-        <Login authorized={{}} onChange={handleLogin} /> <Logs />
+        <Login authorized={{}} onChange={handleLogin} /> <Logs /> <CreateUser />
       </div>
 
       <h1 className={"text-center"}>To Do List</h1>

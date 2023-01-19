@@ -28,7 +28,7 @@ export default function Login(props) {
   const [login, setLogin] = useState(null);
 
   async function loginUser(credentials) {
-    await fetch(process.env.REACT_APP_API + "login", {
+    await fetch(process.env.REACT_APP_API + "users/login", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -41,10 +41,10 @@ export default function Login(props) {
             "Too many login requests! Please wait and try again later."
           );
           setLogin(null);
-          throw new Error("Too many requests!");
+          return;
         } else if (response.status === 401) {
-          setLogin(false);
-          throw new Error("Wrong login credentials!");
+          setLogin(null);
+          throw new Error("Wrong username or password!");
         }
         return response.json();
       })
